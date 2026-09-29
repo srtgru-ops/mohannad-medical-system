@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/fireba
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const firebaseConfig = {
+  apiKey: "AIzaSyBm5Scafp07Nj4XF3lyyFB1os30UJEXusM",
   authDomain: "mohannad-medical-system.firebaseapp.com",
   projectId: "mohannad-medical-system",
   storageBucket: "mohannad-medical-system.firebasestorage.app",
@@ -10,5 +11,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+
 export { db };
