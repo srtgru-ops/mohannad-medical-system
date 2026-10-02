@@ -32,7 +32,7 @@
 .notice{margin-top:14px;padding:13px;border:1px solid #e4e9ef;background:#f7f9fb;border-radius:10px;color:#5b6b7d}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .danger{background:#fff!important;color:#a11d1d!important;border:1px solid #f0caca!important}
-.empty{padding:24px;border:1px dashed #d9e0e8;border-radius:12px;color:#728096;text-align:center}
+.target-box{margin-top:18px;padding:16px;border:1px solid #dce3ec;border-radius:12px;background:#f8fafc}.target-box h3{margin:0 0 10px}.target-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.target-row input{width:100%;box-sizing:border-box;margin-top:7px;padding:12px;border:1px solid #dce3ec;border-radius:10px}.empty{padding:24px;border:1px dashed #d9e0e8;border-radius:12px;color:#728096;text-align:center}
 @media(max-width:1000px){.dept-grid,.doctor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.form-grid{grid-template-columns:1fr}.staff-row{grid-template-columns:1fr 1fr}.staff-row button{grid-column:1/-1}}
 </style>
@@ -73,7 +73,7 @@
 <div><button id="backDepartments" class="back-btn">رجوع للأقسام</button><h3 id="departmentTitle"></h3><span class="muted">الأطباء والطاقم والرواتب الثابتة لهذا القسم.</span></div>
 <button id="addDoctor" class="btn">+ إضافة طبيب</button>
 </div>
-<div id="doctorGrid" class="doctor-grid"></div>
+<div class="target-box"><h3>هدف القسم الشهري</h3><div class="target-row"><label>الشهر<input id="departmentTargetMonth" type="month"></label><label>هدف صافي الربح (ر.س)<input id="departmentTargetValue" type="number" min="0" placeholder="0"></label></div><div class="actions"><button id="saveDepartmentTarget" class="back-btn">حفظ هدف القسم</button></div></div><div id="doctorGrid" class="doctor-grid"></div>
 </div>
 </section>
 
@@ -87,7 +87,7 @@
 <label>الراتب الشهري الثابت<input id="doctorSalary" type="number" min="0" placeholder="0"></label>
 </div>
 
-<div class="staff-head"><h3>الممرضات / المساعدات التابعة للطبيب</h3><button id="addStaff" class="back-btn" type="button">+ إضافة ممرضة / مساعدة</button></div>
+<div class="target-box"><h3>هدف الطبيب الشهري</h3><div class="target-row"><label>الشهر<input id="doctorTargetMonth" type="month"></label><label>هدف صافي الربح (ر.س)<input id="doctorTargetValue" type="number" min="0" placeholder="0"></label></div></div><div class="staff-head"><h3>الممرضات / المساعدات التابعة للطبيب</h3><button id="addStaff" class="back-btn" type="button">+ إضافة ممرضة / مساعدة</button></div>
 <div id="staffList"></div>
 <div class="notice">راتب الطبيب ورواتب الممرضات والمساعدات تُحسب كمصاريف شهرية ثابتة في النظرة المالية. أي تعديل يبدأ من الشهر الحالي حتى لا تتغير الأشهر السابقة.</div>
 <div class="actions">
@@ -109,7 +109,7 @@ import {collection,getDocs,doc,setDoc,serverTimestamp} from 'https://www.gstatic
 
 const defaultDepartments=['الأسنان','العيادات العامة','النساء والولادة','الطوارئ','البشرة والجلدية','الليزر والتجميل','الفيلر والبوتوكس','الإبر والنضارة','المختبرات','الأشعة'];let departments=[...defaultDepartments];
 const $=id=>document.getElementById(id);
-let doctors=[],activeDepartment='',editing=null;
+let doctors=[],activeDepartment='',editing=null,departmentTargets={};
 const currentMonth=()=>new Date().toISOString().slice(0,7);
 const safeId=s=>(s||'').replace(/[\\/#?\[\]]/g,'-').trim();
 
@@ -142,14 +142,14 @@ function latestState(x){
  const p=sorted.filter(v=>v.fromMonth<=currentMonth()).at(-1)||sorted.at(-1);
  return {salary:Number(p?.salary??x.salary??0),staff:Array.isArray(p?.staff)?p.staff:(x.staff||[])};
 }
-function openDepartment(dep){activeDepartment=dep;renderDoctors();show('doctorsView')}
+function openDepartment(dep){activeDepartment=dep;const m=currentMonth();$('departmentTargetMonth').value=m;$('departmentTargetValue').value=departmentTargets[dep]?.[m]||0;renderDoctors();show('doctorsView')}
 function openEditor(x=null){
  editing=x;
  const state=x?latestState(x):{salary:0,staff:[]};
  $('editorTitle').textContent=x?'تعديل بيانات '+x.name:'إضافة طبيب';
  $('editorDepartment').textContent=activeDepartment;
  $('doctorName').value=x?.name||'';
- $('doctorSalary').value=state.salary||0;
+ $('doctorSalary').value=state.salary||0;$('doctorTargetMonth').value=currentMonth();$('doctorTargetValue').value=x?.profitTargets?.[currentMonth()]||0;
  $('staffList').innerHTML='';
  (state.staff||[]).forEach(addStaffRow);
  $('deleteDoctor').style.display=x?'inline-block':'none';
@@ -165,6 +165,9 @@ $('backDepartments').onclick=()=>show('departmentsView');
 $('backDoctors').onclick=()=>{renderDoctors();show('doctorsView')};
 $('addDoctor').onclick=()=>openEditor();
 $('addStaff').onclick=()=>addStaffRow();
+$('departmentTargetMonth').onchange=()=>{$('departmentTargetValue').value=departmentTargets[activeDepartment]?.[$('departmentTargetMonth').value]||0};
+$('doctorTargetMonth').onchange=()=>{$('doctorTargetValue').value=editing?.profitTargets?.[$('doctorTargetMonth').value]||0};
+$('saveDepartmentTarget').onclick=async()=>{const month=$('departmentTargetMonth').value||currentMonth(),value=Number($('departmentTargetValue').value||0);try{await setDoc(doc(db,'clinicDepartments',safeId(activeDepartment)),{name:activeDepartment,active:true,profitTargets:{...(departmentTargets[activeDepartment]||{}),[month]:value},updatedAt:serverTimestamp()},{merge:true});departmentTargets[activeDepartment]={...(departmentTargets[activeDepartment]||{}),[month]:value};$('status').textContent='● تم حفظ هدف القسم للشهر المحدد';}catch(e){console.error(e);alert('تعذر حفظ هدف القسم.')}};
 
 $('saveDoctor').onclick=async()=>{
  const name=$('doctorName').value.trim();
@@ -175,8 +178,9 @@ $('saveDoctor').onclick=async()=>{
  const id=editing?.id||safeId(activeDepartment+'-'+name+'-'+Date.now());
  const oldHistory=Array.isArray(editing?.salaryHistory)?editing.salaryHistory:[];
  const newHistory=[...oldHistory.filter(x=>x.fromMonth!==month),{fromMonth:month,salary,staff}];
+ const targetMonth=$('doctorTargetMonth').value||month;const targetValue=Number($('doctorTargetValue').value||0);const profitTargets={...(editing?.profitTargets||{}),[targetMonth]:targetValue};
  const payload={
-   name,department:activeDepartment,salary,staff,monthlyFixed:true,
+   name,department:activeDepartment,salary,staff,monthlyFixed:true,profitTargets,
    startMonth:editing?.startMonth||month,active:true,
    salaryHistory:newHistory,updatedAt:serverTimestamp()
  };
@@ -204,7 +208,7 @@ async function load(){
  try{
    const [s,ds]=await Promise.all([getDocs(collection(db,'clinicDoctors')),getDocs(collection(db,'clinicDepartments'))]);
    doctors=s.docs.map(x=>({id:x.id,...x.data()}));
-   const custom=ds.docs.map(x=>x.data()).filter(x=>x.active!==false&&x.name).map(x=>x.name);
+   departmentTargets={};ds.docs.forEach(x=>{const v=x.data();if(v.name)departmentTargets[v.name]=v.profitTargets||{}});const custom=ds.docs.map(x=>x.data()).filter(x=>x.active!==false&&x.name).map(x=>x.name);
    const fromDoctors=doctors.map(x=>x.department).filter(Boolean);
    departments=[...new Set([...defaultDepartments,...custom,...fromDoctors])];
    renderDepartments();
