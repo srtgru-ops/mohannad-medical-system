@@ -62,7 +62,7 @@
 
 <section id="departmentsView" class="view active">
 <div class="card">
-<div class="toolbar"><div><h3>اختر القسم / العيادة</h3><span class="muted">اضغط على القسم للدخول إلى الأطباء التابعين له.</span></div></div>
+<div class="toolbar"><div><h3>اختر القسم / العيادة</h3><span class="muted">اضغط على القسم للدخول إلى الأطباء التابعين له.</span></div><button id="addDepartment" class="btn">+ إضافة قسم جديد</button></div>
 <div id="departmentGrid" class="dept-grid"></div>
 </div>
 </section>
@@ -107,7 +107,7 @@ function toggleGlobalMenu(force){const d=document.getElementById('globalDrawer')
 import {db} from './firebase.js';
 import {collection,getDocs,doc,setDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-const departments=['الأسنان','العيادات العامة','النساء والولادة','الطوارئ','البشرة والجلدية','الليزر والتجميل','الفيلر والبوتوكس','الإبر والنضارة','المختبرات','الأشعة'];
+const defaultDepartments=['الأسنان','العيادات العامة','النساء والولادة','الطوارئ','البشرة والجلدية','الليزر والتجميل','الفيلر والبوتوكس','الإبر والنضارة','المختبرات','الأشعة'];let departments=[...defaultDepartments];
 const $=id=>document.getElementById(id);
 let doctors=[],activeDepartment='',editing=null;
 const currentMonth=()=>new Date().toISOString().slice(0,7);
@@ -159,7 +159,7 @@ function collectStaff(){
  return [...$('staffList').querySelectorAll('.staff-row')].map(r=>({name:r.querySelector('.staff-name').value.trim(),salary:Number(r.querySelector('.staff-salary').value||0)})).filter(x=>x.name);
 }
 
-$('departmentGrid').onclick=e=>{const c=e.target.closest('[data-dep]');if(c)openDepartment(c.dataset.dep)};
+$('departmentGrid').onclick=e=>{const c=e.target.closest('[data-dep]');if(c)openDepartment(c.dataset.dep)};$('addDepartment').onclick=async()=>{const name=(prompt('أدخل اسم القسم / العيادة الجديدة:')||'').trim();if(!name)return;if(departments.includes(name))return alert('هذا القسم موجود بالفعل.');try{await setDoc(doc(db,'clinicDepartments',safeId(name)),{name,active:true,createdAt:serverTimestamp()},{merge:true});departments.push(name);renderDepartments();$('status').textContent='● تم إضافة القسم الجديد بنجاح';}catch(e){console.error(e);alert('تعذر حفظ القسم الجديد.')}};
 $('doctorGrid').onclick=e=>{const c=e.target.closest('[data-id]');if(c)openEditor(doctors.find(x=>x.id===c.dataset.id))};
 $('backDepartments').onclick=()=>show('departmentsView');
 $('backDoctors').onclick=()=>{renderDoctors();show('doctorsView')};
@@ -202,8 +202,11 @@ $('deleteDoctor').onclick=async()=>{
 
 async function load(){
  try{
-   const s=await getDocs(collection(db,'clinicDoctors'));
+   const [s,ds]=await Promise.all([getDocs(collection(db,'clinicDoctors')),getDocs(collection(db,'clinicDepartments'))]);
    doctors=s.docs.map(x=>({id:x.id,...x.data()}));
+   const custom=ds.docs.map(x=>x.data()).filter(x=>x.active!==false&&x.name).map(x=>x.name);
+   const fromDoctors=doctors.map(x=>x.department).filter(Boolean);
+   departments=[...new Set([...defaultDepartments,...custom,...fromDoctors])];
    renderDepartments();
    $('status').textContent='● متصل ومحدّث الآن';
  }catch(e){console.error(e);$('status').textContent='تعذر قراءة بيانات الأطباء من Firebase';}
