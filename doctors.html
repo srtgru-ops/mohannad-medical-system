@@ -1,3 +1,214 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>الأطباء والأقسام</title><link rel="stylesheet" href="style.css"><style id="globalDrawerStyle">
-.menu-toggle{position:fixed;top:22px;left:22px;z-index:30;width:54px;height:54px;border:1px solid #dce3ec;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(16,43,85,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer}.menu-toggle span{display:block;width:24px;height:3px;border-radius:4px;background:#102b55}.drawer{position:fixed;top:0;right:-330px;width:310px;height:100vh;z-index:29;background:#103746;color:#fff;padding:92px 22px 30px;box-shadow:-15px 0 40px rgba(0,0,0,.18);transition:.28s ease}.drawer.open{right:0}.drawer h2{font-size:22px;margin:0 0 4px;color:#fff}.drawer small{color:#a9d2df}.drawer nav{margin-top:30px}.drawer a{display:block;color:#fff;text-decoration:none;padding:13px 15px;border-radius:12px;margin:5px 0;font-weight:700}.drawer a:hover,.drawer a.active{background:#1c5b70}.drawer-overlay{position:fixed;inset:0;background:rgba(15,30,60,.22);z-index:28;display:none}.drawer-overlay.show{display:block}@media(max-width:600px){.drawer{width:min(310px,88vw)}.menu-toggle{top:14px;left:14px}}
-.dept-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.dept-card{border:1px solid #dce3ec;border-radius:14px;padding:24px;min-height:105px;background:#fff;cursor:pointer;transition:.18s}.dept-card.active{background:#103746;color:#fff}.dept-card:hover{border-color:#103746}.dept-card strong{display:block;font-size:18px;margin-bottom:8px}.doctor-panel{margin-top:18px}.doctor-card{border:1px solid #dce3ec;border-radius:12px;padding:18px;margin:10px 0;background:#fff}.doctor-card input{padding:10px;border:1px solid #dce3ec;border-radius:8px;margin:5px;width:180px}.staff-box{margin-top:10px;padding:12px;background:#f6f8fa;border-radius:10px}.staff-row{display:flex;gap:8px;flex-wrap:wrap;margin:7px 0}.hidden{display:none}@media(max-width:900px){.dept-grid{grid-template-columns:repeat(2,1fr)}}.dept-doctors{margin-top:18px;display:none}.dept-doctors.show{display:block}.pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.pick-doc{border:1px solid #dce3ec;border-radius:12px;padding:18px;cursor:pointer;background:#fff}.pick-doc:hover{border-color:#103746}.salary-box{display:none;margin-top:16px;padding:18px;border:1px solid #dce3ec;border-radius:12px}.salary-box.show{display:block}.salary-box input{padding:10px;border:1px solid #dce3ec;border-radius:8px;margin:6px}.staffline{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}@media(max-width:700px){.pick-grid{grid-template-columns:1fr 1fr}}.detail-view{display:none;margin-top:18px}.detail-view.open{display:block}.doc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.doc-card{border:1px solid #dce3ec;border-radius:14px;padding:24px;min-height:105px;background:#fff;cursor:pointer;position:relative}.doc-card:after{content:'‹';position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:28px;color:#103746}.doc-card strong{display:block;font-size:18px;margin-bottom:8px}.profile-box{display:none;margin-top:18px}.profile-box.open{display:block}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.profile-grid input,.staff-entry input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #dce3ec;border-radius:9px}.staff-entry{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin:8px 0}.staff-entry button{border:0;border-radius:8px;padding:8px 12px;cursor:pointer}.back2{border:0;background:#eef3f6;color:#103746;padding:10px 15px;border-radius:9px;font-weight:700;cursor:pointer}@media(max-width:900px){.doc-grid{grid-template-columns:repeat(2,1fr)}}</style></head><body><button class="menu-toggle" aria-label="القائمة" onclick="toggleGlobalMenu()"><span></span><span></span><span></span></button><div class="drawer-overlay" id="drawerOverlay" onclick="toggleGlobalMenu(false)"></div><aside class="drawer" id="globalDrawer"><h2>مجمع الدكتور مهند الطبي</h2><small>Medical Management System — BETA</small><nav><a href="dashboard.html" class="">النظرة المالية</a><a href="data-entry.html" class="">إدخال البيانات</a><a href="doctors.html" class="active">الأطباء والأقسام</a><a href="income.html" class="">الإيرادات</a><a href="expenses.html" class="">المصروفات</a><a href="reports.html" class="">التقارير والتحليل</a><a href="index.html">تسجيل الخروج</a></nav></aside><div class="app" style="display:block"><main class="main"><div class="top"><div><h2>الأطباء والأقسام</h2><span class="muted">الأقسام مبنية على الخدمات المتاحة، وأسماء الأطباء والشفتات الحالية بيانات تجريبية للاختبار.</span></div><button class="btn">+ إضافة طبيب</button></div><div class="card"><h3>اختر القسم / العيادة</h3><div class="dept-grid"><div class="dept-card"><strong>الأسنان</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>العيادات العامة</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>النساء والولادة</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>الطوارئ</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>البشرة والجلدية</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>الليزر والتجميل</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>الفيلر والبوتوكس</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>الإبر والنضارة</strong><span class="muted">إدارة الأطباء والطاقم</span></div><div class="dept-card"><strong>المختبرات</strong><span class="muted">إدارة المختصين والطاقم</span></div><div class="dept-card"><strong>الأشعة</strong><span class="muted">إدارة المختصين والطاقم</span></div></div></div><div class="card section"><table class="table"><tr><th>الطبيب / المختص</th><th>القسم</th><th>الراتب التجريبي</th><th>الشفت</th><th>الحالة</th></tr><tr><td>د. أحمد السلمي</td><td>الأسنان</td><td>12,000</td><td>صباح</td><td>تجريبي</td></tr><tr><td>د. نورة الحربي</td><td>الأسنان</td><td>13,500</td><td>مساء</td><td>تجريبي</td></tr><tr><td>د. خالد العتيبي</td><td>العيادات العامة</td><td>11,000</td><td>صباح</td><td>تجريبي</td></tr><tr><td>د. ريم الزهراني</td><td>العيادات العامة</td><td>11,500</td><td>مساء</td><td>تجريبي</td></tr><tr><td>د. سارة القرشي</td><td>النساء والولادة</td><td>15,000</td><td>صباح</td><td>تجريبي</td></tr><tr><td>د. هناء العمري</td><td>النساء والولادة</td><td>15,500</td><td>مساء</td><td>تجريبي</td></tr><tr><td>د. سامي الغامدي</td><td>البشرة والجلدية</td><td>14,000</td><td>صباح</td><td>تجريبي</td></tr><tr><td>د. لمى الشريف</td><td>الليزر والتجميل</td><td>14,500</td><td>مساء</td><td>تجريبي</td></tr><tr><td>د. مها المطيري</td><td>الفيلر والبوتوكس</td><td>15,000</td><td>مساء</td><td>تجريبي</td></tr><tr><td>د. جود القحطاني</td><td>الإبر والنضارة</td><td>13,000</td><td>مساء</td><td>تجريبي</td></tr><tr><td>د. فهد المالكي</td><td>الطوارئ</td><td>14,000</td><td>صباح</td><td>تجريبي</td></tr><tr><td>د. وليد الحربي</td><td>الطوارئ</td><td>14,000</td><td>مساء</td><td>تجريبي</td></tr><tr><td>أ. ليان أحمد</td><td>المختبرات</td><td>8,500</td><td>صباح</td><td>تجريبي</td></tr><tr><td>أ. فيصل محمد</td><td>الأشعة</td><td>9,500</td><td>مساء</td><td>تجريبي</td></tr></table></div></main></div><script>function toggleGlobalMenu(force){const d=document.getElementById('globalDrawer'),o=document.getElementById('drawerOverlay');const open=typeof force==='boolean'?force:!d.classList.contains('open');d.classList.toggle('open',open);o.classList.toggle('show',open)}</script><script>const doctorMap={'الأسنان':[['د. أحمد السلمي',12000],['د. نورة الحربي',13500]],'العيادات العامة':[['د. خالد العتيبي',11000],['د. ريم الزهراني',11500]],'النساء والولادة':[['د. سارة القرشي',15000],['د. هناء العمري',15500]],'البشرة والجلدية':[['د. سامي الغامدي',14000]],'الليزر والتجميل':[['د. لمى الشريف',14500]],'الفيلر والبوتوكس':[['د. مها المطيري',15000]],'الإبر والنضارة':[['د. جود القحطاني',13000]],'الطوارئ':[['د. فهد المالكي',14000],['د. وليد الحربي',14000]],'المختبرات':[['أ. ليان أحمد',8500]],'الأشعة':[['أ. فيصل محمد',9500]]};let currentDoctor='';document.querySelectorAll('.dept-card').forEach(card=>card.addEventListener('click',()=>{document.querySelectorAll('.dept-card').forEach(x=>x.classList.remove('active'));card.classList.add('active');const dep=card.querySelector('strong').textContent;depName.textContent=dep;pickGrid.innerHTML=(doctorMap[dep]||[]).map(x=>'<div class="pick-doc" data-name="'+x[0]+'" data-salary="'+x[1]+'"><strong>'+x[0]+'</strong><br><span class="muted">اضغط لإدارة الراتب والطاقم</span></div>').join('');deptDoctors.classList.add('show');salaryBox.classList.remove('show');deptDoctors.scrollIntoView({behavior:'smooth'})}));pickGrid.addEventListener('click',e=>{const d=e.target.closest('.pick-doc');if(!d)return;currentDoctor=d.dataset.name;docName.textContent=currentDoctor;salaryInput.value=d.dataset.salary;staffLines.innerHTML='';salaryBox.classList.add('show')});function addStaff(){const r=document.createElement('div');r.className='staffline';r.innerHTML='<input placeholder="اسم الممرضة / المساعدة"><input type="number" min="0" placeholder="الراتب الشهري"><button type="button">حذف</button>';r.querySelector('button').onclick=()=>r.remove();staffLines.appendChild(r)}addStaffBtn.onclick=addStaff;saveSalaryBtn.onclick=()=>alert('تم تجهيز بيانات '+currentDoctor+' للحفظ كمصروف شهري ثابت.');</script><script>const clinicDocs={'الأسنان':[['د. أحمد السلمي',12000],['د. نورة الحربي',13500]],'العيادات العامة':[['د. خالد العتيبي',11000],['د. ريم الزهراني',11500]],'النساء والولادة':[['د. سارة القرشي',15000],['د. هناء العمري',15500]],'البشرة والجلدية':[['د. سامي الغامدي',14000]],'الليزر والتجميل':[['د. لمى الشريف',14500]],'الفيلر والبوتوكس':[['د. مها المطيري',15000]],'الإبر والنضارة':[['د. جود القحطاني',13000]],'الطوارئ':[['د. فهد المالكي',14000],['د. وليد الحربي',14000]],'المختبرات':[['أ. ليان أحمد',8500]],'الأشعة':[['أ. فيصل محمد',9500]]};let activeDep='',activeDoc=null;function openDep(dep){activeDep=dep;detailTitle.textContent=dep;docGrid.innerHTML=(clinicDocs[dep]||[]).map((x,i)=>'<div class="doc-card" data-i="'+i+'"><strong>'+x[0]+'</strong><span class="muted">الراتب: '+Number(x[1]).toLocaleString('ar-SA')+' ر.س</span></div>').join('');detailView.classList.add('open');profileBox.classList.remove('open');detailView.scrollIntoView({behavior:'smooth'})}document.querySelectorAll('.dept-card').forEach(x=>x.onclick=()=>openDep(x.querySelector('strong').textContent));docGrid.onclick=e=>{const d=e.target.closest('.doc-card');if(!d)return;activeDoc=clinicDocs[activeDep][Number(d.dataset.i)];profileName.textContent=activeDoc[0];profileDepartment.textContent=activeDep;profileSalary.value=activeDoc[1];profileStaff.innerHTML='';profileStaffCount.value=0;detailView.classList.remove('open');profileBox.classList.add('open');profileBox.scrollIntoView({behavior:'smooth'})};function addMember(){const r=document.createElement('div');r.className='staff-entry';r.innerHTML='<input placeholder="اسم الممرضة / المساعدة"><input type="number" min="0" placeholder="الراتب الشهري"><button type="button">حذف</button>';r.querySelector('button').onclick=()=>{r.remove();profileStaffCount.value=profileStaff.children.length};profileStaff.appendChild(r);profileStaffCount.value=profileStaff.children.length}addProfileStaff.onclick=addMember;backToDeps.onclick=()=>{detailView.classList.remove('open');profileBox.classList.remove('open')};backToDocs.onclick=()=>{profileBox.classList.remove('open');openDep(activeDep)};saveProfileData.onclick=async()=>{activeDoc[1]=Number(profileSalary.value||0);const staff=[...profileStaff.querySelectorAll('.staff-entry')].map(x=>({name:x.children[0].value.trim(),salary:Number(x.children[1].value||0)})).filter(x=>x.name);const id=(activeDep+'-'+activeDoc[0]).replaceAll('/','-');const payload={name:activeDoc[0],department:activeDep,salary:activeDoc[1],staff,monthlyFixed:true,startMonth:new Date().toISOString().slice(0,7),updatedAt:new Date().toISOString()};try{const m=await import('https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js');const f=await import('./firebase.js');await m.setDoc(m.doc(f.db,'clinicDoctors',id),payload,{merge:true});alert('تم حفظ راتب الطبيب ورواتب الطاقم كمصاريف شهرية ثابتة.')}catch(e){console.error(e);alert('تعذر الحفظ في Firebase')}};</script></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الأطباء والأقسام</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.menu-toggle{position:fixed;top:22px;left:22px;z-index:30;width:54px;height:54px;border:1px solid #dce3ec;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(16,43,85,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer}
+.menu-toggle span{width:24px;height:3px;border-radius:4px;background:#102b55}
+.drawer{position:fixed;top:0;right:-330px;width:310px;height:100vh;z-index:29;background:#103746;color:#fff;padding:92px 22px 30px;transition:.28s}
+.drawer.open{right:0}.drawer h2{color:#fff}.drawer nav{margin-top:30px}
+.drawer a{display:block;color:#fff;text-decoration:none;padding:13px 15px;border-radius:12px;margin:5px 0;font-weight:700}
+.drawer a:hover,.drawer a.active{background:#1c5b70}
+.drawer-overlay{position:fixed;inset:0;background:#0f1e3c38;z-index:28;display:none}.drawer-overlay.show{display:block}
+.page-head{margin-bottom:18px}.status{font-weight:700;margin-top:8px}
+.dept-grid,.doctor-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.dept-card,.doctor-card{border:1px solid #dce3ec;background:#fff;border-radius:14px;padding:24px;min-height:120px;cursor:pointer;transition:.18s;position:relative;box-shadow:0 2px 8px rgba(16,43,85,.04)}
+.dept-card:hover,.doctor-card:hover{border-color:#103746;box-shadow:0 6px 18px rgba(16,43,85,.09);transform:translateY(-1px)}
+.dept-card:after,.doctor-card:after{content:'‹';position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:28px;color:#103746}
+.dept-card strong,.doctor-card strong{display:block;font-size:18px;margin-bottom:8px;color:#102b55}
+.view{display:none}.view.active{display:block}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.back-btn{border:0;background:#eef3f6;color:#103746;padding:10px 15px;border-radius:9px;font-weight:700;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid label{font-weight:700;color:#102b55}
+.form-grid input{width:100%;box-sizing:border-box;margin-top:7px;padding:12px;border:1px solid #dce3ec;border-radius:10px;background:#fff}
+.staff-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px}
+.staff-row{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin:9px 0}
+.staff-row input{padding:11px;border:1px solid #dce3ec;border-radius:9px}
+.staff-row button{border:0;border-radius:8px;padding:9px 12px;cursor:pointer;background:#fff0f0;color:#a11d1d;font-weight:700}
+.notice{margin-top:14px;padding:13px;border:1px solid #e4e9ef;background:#f7f9fb;border-radius:10px;color:#5b6b7d}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.danger{background:#fff!important;color:#a11d1d!important;border:1px solid #f0caca!important}
+.empty{padding:24px;border:1px dashed #d9e0e8;border-radius:12px;color:#728096;text-align:center}
+@media(max-width:1000px){.dept-grid,.doctor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.form-grid{grid-template-columns:1fr}.staff-row{grid-template-columns:1fr 1fr}.staff-row button{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<button class="menu-toggle" onclick="toggleGlobalMenu()"><span></span><span></span><span></span></button>
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleGlobalMenu(false)"></div>
+<aside class="drawer" id="globalDrawer">
+<h2>مجمع الدكتور مهند الطبي</h2>
+<nav>
+<a href="dashboard.html">النظرة المالية</a>
+<a href="data-entry.html">إدخال البيانات</a>
+<a href="doctors.html" class="active">الأطباء والأقسام</a>
+<a href="income.html">الإيرادات</a>
+<a href="expenses.html">المصروفات</a>
+<a href="reports.html">التقارير والتحليل</a>
+</nav>
+</aside>
+
+<div class="app" style="display:block">
+<main class="main">
+<div class="page-head">
+<h2>الأطباء والأقسام</h2>
+<div class="muted">اختر القسم ثم أضف أو عدّل الطبيب والطاقم التابع له ورواتبهم الشهرية الثابتة.</div>
+<div id="status" class="status">جاري تحميل البيانات...</div>
+</div>
+
+<section id="departmentsView" class="view active">
+<div class="card">
+<div class="toolbar"><div><h3>اختر القسم / العيادة</h3><span class="muted">اضغط على القسم للدخول إلى الأطباء التابعين له.</span></div></div>
+<div id="departmentGrid" class="dept-grid"></div>
+</div>
+</section>
+
+<section id="doctorsView" class="view">
+<div class="card">
+<div class="toolbar">
+<div><button id="backDepartments" class="back-btn">رجوع للأقسام</button><h3 id="departmentTitle"></h3><span class="muted">الأطباء والطاقم والرواتب الثابتة لهذا القسم.</span></div>
+<button id="addDoctor" class="btn">+ إضافة طبيب</button>
+</div>
+<div id="doctorGrid" class="doctor-grid"></div>
+</div>
+</section>
+
+<section id="editorView" class="view">
+<div class="card">
+<div class="toolbar">
+<div><button id="backDoctors" class="back-btn">رجوع للأطباء</button><h3 id="editorTitle">إضافة طبيب</h3><span id="editorDepartment" class="muted"></span></div>
+</div>
+<div class="form-grid">
+<label>اسم الطبيب / المختص<input id="doctorName" placeholder="اسم الطبيب"></label>
+<label>الراتب الشهري الثابت<input id="doctorSalary" type="number" min="0" placeholder="0"></label>
+</div>
+
+<div class="staff-head"><h3>الممرضات / المساعدات التابعة للطبيب</h3><button id="addStaff" class="back-btn" type="button">+ إضافة ممرضة / مساعدة</button></div>
+<div id="staffList"></div>
+<div class="notice">راتب الطبيب ورواتب الممرضات والمساعدات تُحسب كمصاريف شهرية ثابتة في النظرة المالية. أي تعديل يبدأ من الشهر الحالي حتى لا تتغير الأشهر السابقة.</div>
+<div class="actions">
+<button id="saveDoctor" class="btn">حفظ</button>
+<button id="deleteDoctor" class="btn danger" style="display:none">إنهاء / حذف الطبيب</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+
+<script>
+function toggleGlobalMenu(force){const d=document.getElementById('globalDrawer'),o=document.getElementById('drawerOverlay');const open=typeof force==='boolean'?force:!d.classList.contains('open');d.classList.toggle('open',open);o.classList.toggle('show',open)}
+</script>
+
+<script type="module">
+import {db} from './firebase.js';
+import {collection,getDocs,doc,setDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+
+const departments=['الأسنان','العيادات العامة','النساء والولادة','الطوارئ','البشرة والجلدية','الليزر والتجميل','الفيلر والبوتوكس','الإبر والنضارة','المختبرات','الأشعة'];
+const $=id=>document.getElementById(id);
+let doctors=[],activeDepartment='',editing=null;
+const currentMonth=()=>new Date().toISOString().slice(0,7);
+const safeId=s=>(s||'').replace(/[\\/#?\[\]]/g,'-').trim();
+
+function show(id){['departmentsView','doctorsView','editorView'].forEach(x=>$(x).classList.remove('active'));$(id).classList.add('active')}
+function activeDoctors(dep){return doctors.filter(x=>x.department===dep&&x.active!==false)}
+
+function renderDepartments(){
+ $('departmentGrid').innerHTML=departments.map(dep=>{
+   const n=activeDoctors(dep).length;
+   return '<div class="dept-card" data-dep="'+dep+'"><strong>'+dep+'</strong><span class="muted">'+n+' طبيب / مختص</span></div>';
+ }).join('');
+}
+function renderDoctors(){
+ $('departmentTitle').textContent=activeDepartment;
+ const list=activeDoctors(activeDepartment);
+ $('doctorGrid').innerHTML=list.length?list.map(x=>'<div class="doctor-card" data-id="'+x.id+'"><strong>'+x.name+'</strong><span class="muted">الراتب الحالي: '+Number(x.salary||0).toLocaleString('ar-SA')+' ر.س · المساعدون: '+(x.staff||[]).length+'</span></div>').join(''):'<div class="empty">لا يوجد أطباء في هذا القسم. اضغط «إضافة طبيب».</div>';
+}
+function addStaffRow(v={name:'',salary:0}){
+ const row=document.createElement('div');row.className='staff-row';
+ row.innerHTML='<input class="staff-name" placeholder="اسم الممرضة / المساعدة"><input class="staff-salary" type="number" min="0" placeholder="الراتب الشهري"><button type="button">حذف</button>';
+ row.querySelector('.staff-name').value=v.name||'';
+ row.querySelector('.staff-salary').value=v.salary||0;
+ row.querySelector('button').onclick=()=>row.remove();
+ $('staffList').appendChild(row);
+}
+function latestState(x){
+ const h=Array.isArray(x.salaryHistory)?x.salaryHistory:[];
+ if(!h.length)return {salary:Number(x.salary||0),staff:Array.isArray(x.staff)?x.staff:[]};
+ const sorted=[...h].sort((a,b)=>String(a.fromMonth).localeCompare(String(b.fromMonth)));
+ const p=sorted.filter(v=>v.fromMonth<=currentMonth()).at(-1)||sorted.at(-1);
+ return {salary:Number(p?.salary??x.salary??0),staff:Array.isArray(p?.staff)?p.staff:(x.staff||[])};
+}
+function openDepartment(dep){activeDepartment=dep;renderDoctors();show('doctorsView')}
+function openEditor(x=null){
+ editing=x;
+ const state=x?latestState(x):{salary:0,staff:[]};
+ $('editorTitle').textContent=x?'تعديل بيانات '+x.name:'إضافة طبيب';
+ $('editorDepartment').textContent=activeDepartment;
+ $('doctorName').value=x?.name||'';
+ $('doctorSalary').value=state.salary||0;
+ $('staffList').innerHTML='';
+ (state.staff||[]).forEach(addStaffRow);
+ $('deleteDoctor').style.display=x?'inline-block':'none';
+ show('editorView');
+}
+function collectStaff(){
+ return [...$('staffList').querySelectorAll('.staff-row')].map(r=>({name:r.querySelector('.staff-name').value.trim(),salary:Number(r.querySelector('.staff-salary').value||0)})).filter(x=>x.name);
+}
+
+$('departmentGrid').onclick=e=>{const c=e.target.closest('[data-dep]');if(c)openDepartment(c.dataset.dep)};
+$('doctorGrid').onclick=e=>{const c=e.target.closest('[data-id]');if(c)openEditor(doctors.find(x=>x.id===c.dataset.id))};
+$('backDepartments').onclick=()=>show('departmentsView');
+$('backDoctors').onclick=()=>{renderDoctors();show('doctorsView')};
+$('addDoctor').onclick=()=>openEditor();
+$('addStaff').onclick=()=>addStaffRow();
+
+$('saveDoctor').onclick=async()=>{
+ const name=$('doctorName').value.trim();
+ const salary=Number($('doctorSalary').value||0);
+ if(!name)return alert('أدخل اسم الطبيب / المختص.');
+ const staff=collectStaff();
+ const month=currentMonth();
+ const id=editing?.id||safeId(activeDepartment+'-'+name+'-'+Date.now());
+ const oldHistory=Array.isArray(editing?.salaryHistory)?editing.salaryHistory:[];
+ const newHistory=[...oldHistory.filter(x=>x.fromMonth!==month),{fromMonth:month,salary,staff}];
+ const payload={
+   name,department:activeDepartment,salary,staff,monthlyFixed:true,
+   startMonth:editing?.startMonth||month,active:true,
+   salaryHistory:newHistory,updatedAt:serverTimestamp()
+ };
+ try{
+   await setDoc(doc(db,'clinicDoctors',id),payload,{merge:true});
+   const i=doctors.findIndex(x=>x.id===id);
+   const local={id,...editing,...payload,updatedAt:null};
+   if(i>=0)doctors[i]=local;else doctors.push(local);
+   $('status').textContent='● تم حفظ بيانات الطبيب والرواتب بنجاح';
+   renderDepartments();renderDoctors();show('doctorsView');
+ }catch(e){console.error(e);alert('تعذر الحفظ في Firebase.')}
+};
+
+$('deleteDoctor').onclick=async()=>{
+ if(!editing||!confirm('إنهاء الطبيب من هذا الشهر؟ ستبقى بيانات الأشهر السابقة محفوظة.'))return;
+ try{
+   await setDoc(doc(db,'clinicDoctors',editing.id),{active:false,inactiveFromMonth:currentMonth(),updatedAt:serverTimestamp()},{merge:true});
+   editing.active=false;editing.inactiveFromMonth=currentMonth();
+   $('status').textContent='● تم إنهاء الطبيب من الشهر الحالي';
+   renderDepartments();renderDoctors();show('doctorsView');
+ }catch(e){console.error(e);alert('تعذر تنفيذ الحذف.')}
+};
+
+async function load(){
+ try{
+   const s=await getDocs(collection(db,'clinicDoctors'));
+   doctors=s.docs.map(x=>({id:x.id,...x.data()}));
+   renderDepartments();
+   $('status').textContent='● متصل ومحدّث الآن';
+ }catch(e){console.error(e);$('status').textContent='تعذر قراءة بيانات الأطباء من Firebase';}
+}
+load();
+</script>
+</body>
+</html>
