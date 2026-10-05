@@ -71,7 +71,7 @@
 <div class="card">
 <div class="toolbar">
 <div><button id="backDepartments" class="back-btn">رجوع للأقسام</button><h3 id="departmentTitle"></h3><span class="muted">الأطباء والطاقم والرواتب الثابتة لهذا القسم.</span></div>
-<button id="addDoctor" class="btn">+ إضافة طبيب</button>
+<div class="actions" style="margin-top:0"><button id="renameDepartment" class="back-btn">تغيير اسم العيادة</button><button id="addDoctor" class="btn">+ إضافة طبيب</button></div>
 </div>
 <div class="target-box"><h3>هدف القسم الشهري</h3><div class="target-row"><label>الشهر<input id="departmentTargetMonth" type="month"></label><label>هدف صافي الربح (ر.س)<input id="departmentTargetValue" type="number" min="0" placeholder="0"></label></div><div class="actions"><button id="saveDepartmentTarget" class="back-btn">حفظ هدف القسم</button></div></div><div id="doctorGrid" class="doctor-grid"></div>
 </div>
@@ -165,6 +165,28 @@ $('departmentGrid').onclick=e=>{const c=e.target.closest('[data-dep]');if(c)open
 $('doctorGrid').onclick=e=>{const c=e.target.closest('[data-id]');if(c)openEditor(doctors.find(x=>x.id===c.dataset.id))};
 $('backDepartments').onclick=()=>show('departmentsView');
 $('backDoctors').onclick=()=>{renderDoctors();show('doctorsView')};
+$('renameDepartment').onclick=async()=>{
+ const oldName=activeDepartment;
+ const newName=(prompt('تغيير اسم العيادة:',oldName)||'').trim();
+ if(!newName||newName===oldName)return;
+ if(departments.includes(newName))return alert('يوجد قسم / عيادة بهذا الاسم بالفعل.');
+ try{
+   const oldTargets=departmentTargets[oldName]||{};
+   await setDoc(doc(db,'clinicDepartments',safeId(newName)),{name:newName,active:true,profitTargets:oldTargets,updatedAt:serverTimestamp()},{merge:true});
+   await setDoc(doc(db,'clinicDepartments',safeId(oldName)),{name:oldName,active:false,updatedAt:serverTimestamp()},{merge:true});
+   const affected=doctors.filter(d=>d.department===oldName);
+   for(const d of affected){
+     await setDoc(doc(db,'clinicDoctors',d.id),{department:newName,updatedAt:serverTimestamp()},{merge:true});
+     d.department=newName;
+   }
+   departments=departments.map(d=>d===oldName?newName:d);
+   departments=[...new Set(departments)];
+   departmentTargets[newName]=oldTargets;delete departmentTargets[oldName];
+   activeDepartment=newName;
+   renderDepartments();renderDoctors();
+   $('status').textContent='● تم تغيير اسم العيادة بنجاح';
+ }catch(e){console.error(e);alert('تعذر تغيير اسم العيادة.')}
+};
 $('addDoctor').onclick=()=>openEditor();
 $('addStaff').onclick=()=>addStaffRow();
 $('departmentTargetMonth').onchange=()=>{$('departmentTargetValue').value=departmentTargets[activeDepartment]?.[$('departmentTargetMonth').value]||0};
