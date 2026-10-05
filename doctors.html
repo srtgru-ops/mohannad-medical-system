@@ -83,6 +83,7 @@
 <div><button id="backDoctors" class="back-btn">رجوع للأطباء</button><h3 id="editorTitle">إضافة طبيب</h3><span id="editorDepartment" class="muted"></span></div>
 </div>
 <div class="form-grid">
+<label>اسم القسم / العيادة<input id="departmentName" placeholder="اسم القسم / العيادة"></label>
 <label>اسم الطبيب / المختص<input id="doctorName" placeholder="اسم الطبيب"></label>
 <label>الراتب الشهري الثابت<input id="doctorSalary" type="number" min="0" placeholder="0"></label>
 </div>
@@ -148,6 +149,7 @@ function openEditor(x=null){
  const state=x?latestState(x):{salary:0,staff:[]};
  $('editorTitle').textContent=x?'تعديل بيانات '+x.name:'إضافة طبيب';
  $('editorDepartment').textContent=activeDepartment;
+ $('departmentName').value=activeDepartment;
  $('doctorName').value=x?.name||'';
  $('doctorSalary').value=state.salary||0;$('doctorTargetMonth').value=currentMonth();$('doctorTargetValue').value=x?.profitTargets?.[currentMonth()]||0;
  $('staffList').innerHTML='';
@@ -171,7 +173,10 @@ $('saveDepartmentTarget').onclick=async()=>{const month=$('departmentTargetMonth
 
 $('saveDoctor').onclick=async()=>{
  const name=$('doctorName').value.trim();
+ const newDepartment=$('departmentName').value.trim();
+ const oldDepartment=activeDepartment;
  const salary=Number($('doctorSalary').value||0);
+ if(!newDepartment)return alert('أدخل اسم القسم / العيادة.');
  if(!name)return alert('أدخل اسم الطبيب / المختص.');
  const staff=collectStaff();
  const month=currentMonth();
@@ -185,6 +190,18 @@ $('saveDoctor').onclick=async()=>{
    salaryHistory:newHistory,updatedAt:serverTimestamp()
  };
  try{
+   if(newDepartment!==oldDepartment){
+     const oldTargets=departmentTargets[oldDepartment]||{};
+     await setDoc(doc(db,'clinicDepartments',safeId(newDepartment)),{name:newDepartment,active:true,profitTargets:oldTargets,updatedAt:serverTimestamp()},{merge:true});
+     await setDoc(doc(db,'clinicDepartments',safeId(oldDepartment)),{name:oldDepartment,active:false,updatedAt:serverTimestamp()},{merge:true});
+     const affected=doctors.filter(d=>d.department===oldDepartment);
+     for(const d of affected){await setDoc(doc(db,'clinicDoctors',d.id),{department:newDepartment,updatedAt:serverTimestamp()},{merge:true});d.department=newDepartment;}
+     departments=departments.map(d=>d===oldDepartment?newDepartment:d);
+     departments=[...new Set(departments)];
+     departmentTargets[newDepartment]=oldTargets;delete departmentTargets[oldDepartment];
+     activeDepartment=newDepartment;
+     payload.department=newDepartment;
+   }
    await setDoc(doc(db,'clinicDoctors',id),payload,{merge:true});
    const i=doctors.findIndex(x=>x.id===id);
    const local={id,...editing,...payload,updatedAt:null};
