@@ -71,7 +71,7 @@
 <div class="card">
 <div class="toolbar">
 <div><button id="backDepartments" class="back-btn">رجوع للأقسام</button><h3 id="departmentTitle"></h3><span class="muted">الأطباء والطاقم والرواتب الثابتة لهذا القسم.</span></div>
-<div class="actions" style="margin-top:0"><button id="renameDepartment" class="back-btn">تغيير اسم العيادة</button><button id="addDoctor" class="btn">+ إضافة طبيب</button></div>
+<div class="actions" style="margin-top:0"><button id="renameDepartment" class="back-btn">تغيير اسم العيادة</button><button id="deleteDepartment" class="btn danger">حذف القسم</button><button id="addDoctor" class="btn">+ إضافة طبيب</button></div>
 </div>
 <div class="target-box"><h3>هدف القسم الشهري</h3><div class="target-row"><label>الشهر<input id="departmentTargetMonth" type="month"></label><label>هدف صافي الربح (ر.س)<input id="departmentTargetValue" type="number" min="0" placeholder="0"></label></div><div class="actions"><button id="saveDepartmentTarget" class="back-btn">حفظ هدف القسم</button></div></div><div id="doctorGrid" class="doctor-grid"></div>
 </div>
@@ -164,6 +164,7 @@ function collectStaff(){
 $('departmentGrid').onclick=e=>{const c=e.target.closest('[data-dep]');if(c)openDepartment(c.dataset.dep)};$('addDepartment').onclick=async()=>{const name=(prompt('أدخل اسم القسم / العيادة الجديدة:')||'').trim();if(!name)return;if(departments.includes(name))return alert('هذا القسم موجود بالفعل.');try{await setDoc(doc(db,'clinicDepartments',safeId(name)),{name,active:true,createdAt:serverTimestamp()},{merge:true});departments.push(name);renderDepartments();$('status').textContent='● تم إضافة القسم الجديد بنجاح';}catch(e){console.error(e);alert('تعذر حفظ القسم الجديد.')}};
 $('doctorGrid').onclick=e=>{const c=e.target.closest('[data-id]');if(c)openEditor(doctors.find(x=>x.id===c.dataset.id))};
 $('backDepartments').onclick=()=>show('departmentsView');
+$('deleteDepartment').onclick=async()=>{const name=activeDepartment;if(!name)return;if(!confirm('هل أنت متأكد من حذف قسم «'+name+'» من القوائم؟ لن تُحذف السجلات المالية القديمة.'))return;try{await setDoc(doc(db,'clinicDepartments',safeId(name)),{name,active:false,updatedAt:serverTimestamp()},{merge:true});departments=departments.filter(d=>d!==name);activeDepartment='';renderDepartments();show('departmentsView');$('status').textContent='● تم حذف القسم من القوائم، والسجلات القديمة محفوظة';}catch(e){console.error(e);alert('تعذر حذف القسم.')}};
 $('backDoctors').onclick=()=>{renderDoctors();show('doctorsView')};
 $('renameDepartment').onclick=async()=>{
  const oldName=activeDepartment;
@@ -247,9 +248,9 @@ async function load(){
  try{
    const [s,ds]=await Promise.all([getDocs(collection(db,'clinicDoctors')),getDocs(collection(db,'clinicDepartments'))]);
    doctors=s.docs.map(x=>({id:x.id,...x.data()}));
-   departmentTargets={};ds.docs.forEach(x=>{const v=x.data();if(v.name)departmentTargets[v.name]=v.profitTargets||{}});const custom=ds.docs.map(x=>x.data()).filter(x=>x.active!==false&&x.name).map(x=>x.name);
-   const fromDoctors=doctors.map(x=>x.department).filter(Boolean);
-   departments=[...new Set([...defaultDepartments,...custom,...fromDoctors])];
+   departmentTargets={};ds.docs.forEach(x=>{const v=x.data();if(v.name)departmentTargets[v.name]=v.profitTargets||{}});const deptDocs=ds.docs.map(x=>x.data()).filter(x=>x.name);const hidden=new Set(deptDocs.filter(x=>x.active===false).map(x=>x.name));const custom=deptDocs.filter(x=>x.active!==false).map(x=>x.name);
+   const fromDoctors=doctors.map(x=>x.department).filter(Boolean).filter(x=>!hidden.has(x));
+   departments=[...new Set([...defaultDepartments.filter(x=>!hidden.has(x)),...custom,...fromDoctors])];
    renderDepartments();
    $('status').textContent='● متصل ومحدّث الآن';
  }catch(e){console.error(e);$('status').textContent='تعذر قراءة بيانات الأطباء من Firebase';}
