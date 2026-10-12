@@ -106,7 +106,7 @@ function toggleGlobalMenu(force){const d=document.getElementById('globalDrawer')
 
 <script type="module">
 import {db} from './firebase.js';
-import {collection,getDocs,doc,setDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+import {collection,getDocs,doc,setDoc,deleteDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
 const defaultDepartments=['الأسنان','العيادات العامة','النساء والولادة','الطوارئ','البشرة والجلدية','الليزر والتجميل','الفيلر والبوتوكس','الإبر والنضارة','المختبرات','الأشعة'];let departments=[...defaultDepartments];
 const $=id=>document.getElementById(id);
