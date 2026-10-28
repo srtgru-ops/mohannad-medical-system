@@ -85,12 +85,12 @@
 <div class="form-grid">
 <label>اسم القسم / العيادة<input id="departmentName" placeholder="اسم القسم / العيادة"></label>
 <label>اسم الطبيب / المختص<input id="doctorName" placeholder="اسم الطبيب"></label>
-<label>الراتب الشهري الثابت<input id="doctorSalary" type="number" min="0" placeholder="0"></label>
+<label>الراتب الشهري الثابت — التصنيف: رواتب أطباء<input id="doctorSalary" type="number" min="0" placeholder="0"></label>
 </div>
 
 <div class="target-box"><h3>هدف الطبيب الشهري</h3><div class="target-row"><label>الشهر<input id="doctorTargetMonth" type="month"></label><label>هدف صافي الربح (ر.س)<input id="doctorTargetValue" type="number" min="0" placeholder="0"></label></div></div><div class="staff-head"><h3>الممرضات / المساعدات التابعة للطبيب</h3><button id="addStaff" class="back-btn" type="button">+ إضافة ممرضة / مساعدة</button></div>
 <div id="staffList"></div>
-<div class="notice">راتب الطبيب ورواتب الممرضات والمساعدات تُحسب كمصاريف شهرية ثابتة في النظرة المالية. أي تعديل يبدأ من الشهر الحالي حتى لا تتغير الأشهر السابقة.</div>
+<div class="notice">تصنيف الرواتب: رواتب أطباء (يشمل الطبيب والممرضات والمساعدات). راتب الطبيب ورواتب الممرضات والمساعدات تُحسب كمصاريف شهرية ثابتة في النظرة المالية. أي تعديل يبدأ من الشهر الحالي حتى لا تتغير الأشهر السابقة.</div>
 <div class="actions">
 <button id="saveDoctor" class="btn">حفظ</button>
 <button id="deleteDoctor" class="btn danger" style="display:none">إنهاء / حذف الطبيب</button>
@@ -204,10 +204,10 @@ $('saveDoctor').onclick=async()=>{
  const month=currentMonth();
  const id=editing?.id||safeId(activeDepartment+'-'+name+'-'+Date.now());
  const oldHistory=Array.isArray(editing?.salaryHistory)?editing.salaryHistory:[];
- const newHistory=[...oldHistory.filter(x=>x.fromMonth!==month),{fromMonth:month,salary,staff}];
+ const newHistory=[...oldHistory.filter(x=>x.fromMonth!==month),{fromMonth:month,salary,staff,expenseCategory:'رواتب أطباء'}];
  const targetMonth=$('doctorTargetMonth').value||month;const targetValue=Number($('doctorTargetValue').value||0);const profitTargets={...(editing?.profitTargets||{}),[targetMonth]:targetValue};
  const payload={
-   name,department:activeDepartment,salary,staff,monthlyFixed:true,profitTargets,
+   name,department:activeDepartment,salary,staff,expenseCategory:'رواتب أطباء',staffExpenseCategory:'رواتب أطباء',monthlyFixed:true,profitTargets,
    startMonth:editing?.startMonth||month,active:true,
    salaryHistory:newHistory,updatedAt:serverTimestamp()
  };
