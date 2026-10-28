@@ -10,8 +10,8 @@ function salaryRowsForMonth(m){
    if(d.startMonth&&d.startMonth>m)return;
    if(d.active===false&&d.inactiveFromMonth&&d.inactiveFromMonth<=m)return;
    const s=salarySnapshot(d,m);
-   if(s.salary>0)out.push({id:'salary-'+d.id+'-'+m,date:m+'-01',department:d.department||'',doctor:d.name||'',patients:0,gross:s.salary,net:s.salary,source:'راتب طبيب'});
-   s.staff.forEach((a,i)=>{const v=Number(a.salary||0);if(v>0)out.push({id:'staff-'+d.id+'-'+i+'-'+m,date:m+'-01',department:d.department||'',doctor:(d.name||'')+' — '+(a.name||'مساعدة/ممرضة'),patients:0,gross:v,net:v,source:'راتب مساعدة/ممرضة'});});
+   if(s.salary>0)out.push({id:'salary-'+d.id+'-'+m,date:m+'-01',department:d.department||'',doctor:d.name||'',patients:0,gross:s.salary,net:s.salary,expenseCategory:'رواتب أطباء',source:'راتب طبيب'});
+   s.staff.forEach((a,i)=>{const v=Number(a.salary||0);if(v>0)out.push({id:'staff-'+d.id+'-'+i+'-'+m,date:m+'-01',department:d.department||'',doctor:(d.name||'')+' — '+(a.name||'مساعدة/ممرضة'),patients:0,gross:v,net:v,expenseCategory:'رواتب أطباء',source:'راتب مساعدة/ممرضة'});});
  });
  return out;
 }
