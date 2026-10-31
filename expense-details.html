@@ -9,7 +9,45 @@ const byCategory=new Map();for(const a of ops){const key=a[1]+'\u0001'+a[3],v=by
 const deps=[...new Set([...active.map(x=>x.department),...salaries.map(x=>x[0])].filter(Boolean))].filter(x=>x!=='الإبر').sort((a,b)=>a.localeCompare(b,'ar'));const clinics=deps.map(dep=>{const records=active.filter(e=>e.department===dep),inc=records.filter(income).reduce((a,e)=>a+amount(e),0),exp=records.filter(expense).reduce((a,e)=>a+amount(e),0),sal=salaries.filter(x=>x[0]===dep).reduce((a,x)=>a+x[5],0),patients=records.reduce((a,e)=>a+Number(e.patients||0),0);return[dep,inc,exp,sal,exp+sal,inc-exp-sal,inc?(inc-exp-sal)/inc*100:0,patients]});
 function show(id,rows,format){$(id).innerHTML=rows.length?rows.map(row=>'<tr>'+row.map((x,i)=>'<td>'+safe(format&&format[i]?format[i](x):x)+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="8">لا توجد بيانات للفترة المختارة</td></tr>'}
 show('clinics',clinics,{1:money,2:money,3:money,4:money,5:money,6:x=>x.toFixed(1)+'%'});show('salaries',salaries,{5:money});show('categories',categories,{2:money});show('operations',ops,{4:money});$('salaryTotal').textContent='إجمالي الرواتب المحسوبة: '+money(salaries.reduce((a,x)=>a+x[5],0));sheets={clinics:[['العيادة','الإيرادات','المصروفات المسجلة','الرواتب','إجمالي المصروفات','صافي الربح','هامش الربح %','عدد المرضى'],...clinics],salaries:[['العيادة','الطبيب','الاسم','النوع','الفترة','الراتب'],...salaries],categories:[['العيادة','التصنيف','إجمالي المصروف','عدد العمليات'],...categories],operations:[['التاريخ','العيادة','البيان','التصنيف','المبلغ'],...ops]}}
-function exportXlsx(keys){if(typeof XLSX==='undefined')return alert('تعذر تحميل مكتبة Excel');const wb=XLSX.utils.book_new();wb.Workbook={Views:[{RTL:true}]};for(const [key,title]of keys){const data=sheets[key],ws=XLSX.utils.aoa_to_sheet(data);ws['!views']=[{RTL:true}];ws['!cols']=data[0].map((_,i)=>({wch:i===0?26:22}));ws['!autofilter']={ref:'A1:'+XLSX.utils.encode_col(data[0].length-1)+data.length};XLSX.utils.book_append_sheet(wb,ws,title)}XLSX.writeFile(wb,'تحليل-المصروفات-'+$('year').value+'-'+$('month').value+'.xlsx')}
+function exportXlsx(keys){
+if(typeof XLSX==='undefined')return alert('تعذر تحميل مكتبة Excel');
+const wb=XLSX.utils.book_new();wb.Workbook={Views:[{RTL:true}]};
+const year=$('year').value,month=$('month').value,dep=$('dep').value||'جميع العيادات',doctor=$('doctor').value||'جميع الأطباء';
+const period=(month&&Number(month)>0?names[Number(month)-1]+' / ':'')+year;
+const navy='193443',teal='438F8C',pale='EAF2F5',white='FFFFFF';
+const moneyFmt='#,##0.00 "ر.س"';
+for(const [key,title] of keys){
+ const data=sheets[key]||[];if(!data.length)continue;
+ const cols=data[0].length,last=XLSX.utils.encode_col(cols-1);
+ const rows=[
+  ['مجمع الدكتور مهند الطبي العام - '+title],
+  ['الفترة: '+period+'    |    العيادة: '+dep+'    |    الطبيب: '+doctor],
+  [],
+  data[0],
+  ...data.slice(1)
+ ];
+ const ws=XLSX.utils.aoa_to_sheet(rows);
+ ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:cols-1}},{s:{r:1,c:0},e:{r:1,c:cols-1}}];
+ ws['!views']=[{RTL:true}];
+ ws['!cols']=data[0].map((h,i)=>({wch:Math.max(19,Math.min(38,String(h).length*2+9))}));
+ ws['!rows']=[{hpt:34},{hpt:28},{hpt:12},{hpt:32},...data.slice(1).map(()=>({hpt:26}))];
+ ws['!autofilter']={ref:'A4:'+last+rows.length};
+ for(let ri=0;ri<rows.length;ri++){
+  for(let ci=0;ci<cols;ci++){
+   const addr=XLSX.utils.encode_cell({r:ri,c:ci}),cell=ws[addr];
+   if(!cell)continue;
+   const base={font:{name:'Arial',sz:11,color:{rgb:navy}},alignment:{horizontal:typeof cell.v==='number'?'center':'right',vertical:'center',readingOrder:2},border:{bottom:{style:'hair',color:{rgb:'DFE7EB'}}}};
+   if(ri===0)cell.s={font:{name:'Arial',sz:17,bold:true,color:{rgb:white}},fill:{fgColor:{rgb:navy}},alignment:{horizontal:'center',vertical:'center',readingOrder:2}};
+   else if(ri===1)cell.s={font:{name:'Arial',sz:11,bold:true,color:{rgb:navy}},fill:{fgColor:{rgb:pale}},alignment:{horizontal:'center',vertical:'center',readingOrder:2}};
+   else if(ri===3)cell.s={font:{name:'Arial',sz:11,bold:true,color:{rgb:white}},fill:{fgColor:{rgb:navy}},alignment:{horizontal:'center',vertical:'center',wrapText:true,readingOrder:2}};
+   else {if(ri%2===0)base.fill={fgColor:{rgb:'F1F6F8'}};cell.s=base;if(typeof cell.v==='number'){const h=String(data[0][ci]);if(/إيراد|مصروف|راتب|ربح|المبلغ/.test(h))cell.z=moneyFmt;else if(/هامش/.test(h))cell.z='0.0"%"';else cell.z='#,##0.##'} }
+  }
+ }
+ ws['!printOptions']={horizontalCentered:true};ws['!pageSetup']={orientation:'landscape',fitToWidth:1,fitToHeight:0};
+ XLSX.utils.book_append_sheet(wb,ws,title);
+}
+XLSX.writeFile(wb,'تحليل-المصروفات-'+year+'-'+month+'.xlsx')
+}
 $('exportAll').onclick=()=>exportXlsx([['clinics','تحليل العيادات'],['salaries','تفاصيل الرواتب'],['categories','تصنيفات المصروفات'],['operations','عمليات المصروفات']]);$('exportSalaries').onclick=()=>exportXlsx([['salaries','تفاصيل الرواتب']]);$('exportCategories').onclick=()=>exportXlsx([['categories','تصنيفات المصروفات'],['operations','عمليات المصروفات']]);function updateDoctorOptions(){const chosen=$('doctor').value,dep=$('dep').value;const values=[...new Set(profiles.filter(p=>!dep||p.department===dep).map(p=>p.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));$('doctor').innerHTML='<option value="">جميع الأطباء</option>';values.forEach(x=>$('doctor').add(new Option(x,x)));if(values.includes(chosen))$('doctor').value=chosen;render()}$('dep').onchange=updateDoctorOptions;['year','month','doctor','dateFrom','dateTo'].forEach(x=>$(x).onchange=render);
 try{const [e,p,r]=await Promise.all([getDocs(collection(db,'entries')),getDocs(collection(db,'clinicDoctors')),getDocs(collection(db,'recurringExpenses'))]);entries=e.docs.map(x=>x.data());profiles=p.docs.map(x=>x.data());recurring=r.docs.map(x=>x.data());[...new Set([...entries.map(x=>x.department),...profiles.map(x=>x.department)].filter(Boolean))].sort().forEach(x=>$('dep').add(new Option(x,x)));const params=new URLSearchParams(location.search),requestedDep=params.get('department'),requestedYear=params.get('year'),requestedMonth=params.get('month');if(requestedYear&&[...$('year').options].some(o=>o.value===requestedYear))$('year').value=requestedYear;if(requestedMonth&&[...$('month').options].some(o=>o.value===requestedMonth))$('month').value=requestedMonth;if(requestedDep&&[...$('dep').options].some(o=>o.value===requestedDep))$('dep').value=requestedDep;const doctorNames=[...new Set(profiles.filter(p=>!$('dep').value||p.department===$('dep').value).map(p=>p.name).filter(Boolean))];doctorNames.sort((a,b)=>a.localeCompare(b,'ar')).forEach(x=>$('doctor').add(new Option(x,x)));const requestedDoctor=params.get('doctor');if(requestedDoctor&&doctorNames.includes(requestedDoctor))$('doctor').value=requestedDoctor;if(params.get('from'))$('dateFrom').value=params.get('from');if(params.get('to'))$('dateTo').value=params.get('to');$('status').textContent='تم تحميل البيانات من Firebase';render()}catch(err){console.error(err);$('status').textContent='تعذر تحميل البيانات من Firebase'}
 </script></body></html>
