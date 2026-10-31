@@ -9,7 +9,7 @@ const now=new Date();
 for(let n=2024;n<=now.getFullYear()+1;n++) Y.add(new Option(n,n));
 Y.value=now.getFullYear();
 M.add(new Option('جميع الأشهر','all'));names.forEach((n,i)=>M.add(new Option(n,i+1)));
-M.value=now.getMonth()+1;
+M.value='all';
 let entries=[],salaryProfiles=[],departmentProfiles=[],recurringProfiles=[],charts=[];
 const creditAsIncome=x=>({id:'credit-'+x.id,date:x.date,department:x.department||'مبيعات الآجل',doctor:x.customer||'',patients:1,type:'إيراد',entryKind:'credit_sale',gross:((Number(x.initialPaid)||0)+(Array.isArray(x.payments)?x.payments.reduce((sum,p)=>sum+(Number(p.amount)||0),0):0)),net:(((Number(x.initialPaid)||0)+(Array.isArray(x.payments)?x.payments.reduce((sum,p)=>sum+(Number(p.amount)||0),0):0)))/1.15});const money=n=>Number(n||0).toLocaleString('ar-SA',{maximumFractionDigits:2})+' ر.س';
 const pct=n=>(Number.isFinite(n)?n:0).toFixed(1)+'%';
