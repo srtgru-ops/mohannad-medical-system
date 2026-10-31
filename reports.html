@@ -50,7 +50,7 @@ function expenseBreakdownData(y,m,d){const current=baseRows(y,m,d).filter(e=>isE
 function renderClinicExpenseCards(y,m,d){
  const departments=[...new Set((d?[d]:[...entries.map(e=>e.department),...profiles.map(p=>p.department)]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
  const root=$('clinicExpenseCards');
- if(!departments.length){root.innerHTML='<div class="clinic-expense-empty">لا توجد عيادات مسجلة.</div>';return}
+ departments.splice(0,departments.length,...departments.filter(dep=>String(dep).trim()!=='الإبر'));if(!departments.length){root.innerHTML='<div class="clinic-expense-empty">لا توجد عيادات مسجلة.</div>';return}
  root.innerHTML=departments.map(dep=>{
   const b=expenseBreakdownData(y,m,dep),total=b.recorded+b.sal,rows=b.rows.filter(x=>x.amount!==0);
   const bars=rows.length?rows.map(x=>{
