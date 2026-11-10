@@ -1,0 +1,13 @@
+/* واجهة دخول مؤقتة فقط — لا تحمي بيانات Firebase أو الملفات العامة */
+(function(){
+'use strict';
+const key='mohannad_staff_access_v1';
+const pass='مهند_الطبي@2026';
+try{if(sessionStorage.getItem(key)==='ok')return;}catch(e){}
+const style=document.createElement('style');
+style.textContent='html.mohannad-locked body{visibility:hidden!important}#mohannad-login{visibility:visible!important;position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center;justify-content:center;background:#eef3f6;direction:rtl;font-family:Tahoma,Arial,sans-serif;padding:18px}#mohannad-login *{box-sizing:border-box}#mohannad-login .login-box{background:#fff;border:1px solid #dbe5ea;border-radius:22px;box-shadow:0 15px 55px #18354b22;padding:32px;max-width:420px;width:100%;text-align:center;color:#18354b}#mohannad-login h2{font-size:24px;margin:12px 0}#mohannad-login p{color:#647785;font-size:14px;line-height:1.8}#mohannad-login input{width:100%;border:1px solid #cad8e0;border-radius:12px;padding:15px;font-size:18px;margin:16px 0;direction:rtl}#mohannad-login button{width:100%;background:#278b87;color:#fff;border:0;border-radius:12px;padding:14px;font-size:17px;cursor:pointer}#mohannad-login .error{color:#b33d43;min-height:24px;font-size:13px}';
+document.documentElement.classList.add('mohannad-locked');
+document.head.appendChild(style);
+function show(){if(document.getElementById('mohannad-login'))return;const wrap=document.createElement('div');wrap.id='mohannad-login';wrap.innerHTML='<div class="login-box"><div style="font-size:40px">🔒</div><h2>مجمع الدكتور مهند الطبي</h2><p>أدخل كلمة المرور الخاصة بالموظفين للدخول إلى النظام</p><form id="mohannad-login-form"><input id="mohannad-password" type="password" placeholder="كلمة المرور" autocomplete="current-password" required><button type="submit">دخول النظام</button><p class="error" id="mohannad-login-error" aria-live="polite"></p></form></div>';document.body.appendChild(wrap);wrap.querySelector('form').addEventListener('submit',function(e){e.preventDefault();if(wrap.querySelector('input').value===pass){try{sessionStorage.setItem(key,'ok')}catch(e){}document.documentElement.classList.remove('mohannad-locked');wrap.remove();}else{wrap.querySelector('.error').textContent='كلمة المرور غير صحيحة';wrap.querySelector('input').value='';wrap.querySelector('input').focus()}})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show);else show();
+})();
